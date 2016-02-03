@@ -1,0 +1,5 @@
+#!/bin/bash
+
+function console--enable-history-search {
+    sed -i '/^#.*history-search/s/^#//' /etc/inputrc
+}

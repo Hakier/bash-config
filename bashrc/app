@@ -1,0 +1,27 @@
+#!/bin/bash
+
+pathApps=~/apps
+
+function app-list {
+    if [ ! -e ${pathApps} ]; then
+        touch ${pathApps}
+    fi
+
+    cat ${pathApps}
+}
+
+function app-add {
+    while [ "${1}" != '' ]; do
+        echo "${1}" >> ${pathApps}
+        shift
+    done
+}
+
+function app-install {
+    while [ "${1}" != '' ]; do
+        app-add "${1}"
+        shift
+    done
+
+    apt-get install `cat /root/apps`
+}

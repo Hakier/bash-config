@@ -1,0 +1,20 @@
+#!/bin/bash
+
+pathCommands=~/commands
+
+function command-list {
+    if [ ! -e ${pathCommands} ]; then
+        touch ${pathCommands}
+    fi
+
+    cat ${pathCommands} | sed -e 's/::/\t::\t/g'
+}
+
+function command-save {
+    echo "${2}::${1}" >> ${pathCommands}
+}
+
+function command-alias {
+    alias cl=command-list
+    alias cs=command-save
+}

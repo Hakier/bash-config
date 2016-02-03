@@ -1,0 +1,47 @@
+#!/bin/bash
+
+function yakuake--set-title {
+    title="${1}"
+
+    qdbus org.kde.yakuake /yakuake/tabs org.kde.yakuake.setTabTitle `qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.activeSessionId` "${title}"
+}
+
+function yakuake--set-title-and-open-screen {
+    title="${1}"
+
+    yakuake--set-title "${title}"
+    screen -S "${title}"
+}
+
+function project-ls {
+    type="${1}"
+    pathProjects=~/dev/projects/${type}
+
+    projectsList="`ls ${pathProjects} -1`"
+
+    echo "${projectsList}"| cat -n
+
+    echo -n "Open project with number: "
+    read projectIndex
+
+    if [ "${projectIndex}" != '' ]; then
+        name=$(echo "${projectsList}" | awk '{if(NR=='${projectIndex}'){print $0}}')
+    fi
+
+    if [ "${name}" ]; then
+        project-cd "${type}" "${name}"
+    fi
+}
+
+function project-cd {
+    name="${2}"
+    type="${1}"
+
+    pathProject="${pathProjects}/${type}/${name}"
+
+    if [ ! -e "${pathProject}" ]; then
+        echo "${pathProject} not exists";
+    else
+        cd "${pathProject}" && yakuake--set-title-and-open-screen "${name}"
+    fi
+}

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+pathVimCfg=/etc/vim/vimrc
+
+function vim--enable-colors {
+    sed -i '/^"syntax/s/^"//' ${pathVimCfg}
+}
+
+function vim--set-color-scheme {
+    if [ "$(grep 'colorscheme' ${pathVimCfg})" == '' ]; then
+        echo 'colorscheme elflord' >> ${pathVimCfg}
+    fi
+}
+
+function vim--enable-line-numbers {
+    if [ "$(grep '^set number' ${pathVimCfg})" == '' ]; then
+        echo 'set number' >> ${pathVimCfg}
+    fi
+}
