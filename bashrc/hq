@@ -1,0 +1,360 @@
+#!/bin/bash
+
+bold=`tput bold`
+normal=`tput sgr0`
+
+function hqBold {
+    echo "${bold}${1}${normal}"
+}
+
+# /**
+#  * Reload bashrc
+#  */
+function hqReloadBashRc {
+    source ~/.bashrc
+}
+alias rl='hqReloadBashRc'
+
+###
+### EXCEPTION
+###
+
+# /**
+#  * Die if equal 1
+#  */
+function hqException {
+ if [ "${1}" == 1 ]; then
+    echo "${2}"
+
+    read a
+ fi
+}
+
+# /**
+#  * Die if empty
+#  */
+function hqExceptionEmpty {
+    if [ "${1}" == '' ]; then
+        echo "${2}"
+
+        read a
+    fi
+}
+
+# /**
+#  * Die if empty
+#  */
+function hqExceptionIsFile {
+    hqDebug 'hqExceptionIsFile' "${1}"
+
+    if [ ! -e "${1}" ]; then
+        echo "${2}"
+
+        read a
+    fi
+}
+
+###
+### DEBUG
+###
+
+# /**
+#  * Debug off
+#  */
+function hqDebugOff {
+    hqDebug=0
+}
+# /**
+#  * Debug on
+#  */
+function hqDebugOn {
+    hqDebug=1
+}
+
+# /**
+#  * hqDebug description string-to-print
+#  */
+function hqDebug {
+    hqExceptionEmpty "${1}" "You have to pass hashTag: 'hqDebug hashTag description'";
+    hqExceptionEmpty "${2}" "You have to pass description: 'hqDebug hashTag description'";
+
+    if [ "${hqDebug}" == 1 ]; then
+        echo -e "${bold}${1}${normal}\t${2}"
+    fi
+}
+
+###
+### FN
+###
+
+# /**
+#  * remove '/' from string end
+#  */
+function hqStringRemoveSlashFromEnd {
+    hqDebug 'hqStringRemoveSlashFromEnd' "${1}"
+
+    return="${1%%/}"
+
+    hqDebug 'hqStringRemoveSlashFromEnd' "${return}"
+}
+
+# /**
+#  * set dir for loading sources for hqLoad command
+#  */
+function hqLoadSetDir {
+    hqStringRemoveSlashFromEnd "${1}"
+    hqLoadDir="${return}"
+
+    hqDebug 'hqLoadSetDir' "${hqLoadDir}"
+}
+
+# /**
+#  * load source from dir which has been set before
+#  */
+function hqLoad {
+    hqExceptionEmpty "${hqLoadDir}" "You have to set load dir: 'hqLoadSetDir eg:/home/hakier/config'"
+    hqExceptionEmpty "${1}" "You have to pass argument: 'hqLoad eg:ext'"
+
+    while [ "${1}" != '' ]; do
+        fileToLoad="${hqLoadDir}/${1}"
+
+        hqExceptionIsFile "${fileToLoad}" "${bold}hqLoad${normal} '${fileToLoad}' not exist"
+
+        source "${fileToLoad}"
+        shift
+    done
+}
+
+# /**
+#  * load source from bashrc sub dir
+#  */
+function hqLoadBashRc {
+    while [ "${1}" != '' ]; do
+        hqLoad "bashrc/${1}"
+
+        shift
+    done
+}
+
+hqDir='/var/www/sandbox/hq/'
+
+function hqAliasPathToHqDir {
+    ln -s "${1}" "${hqDir}/${2}"
+}
+function hqAliasHqDirToPath {
+    ln -s "${hqDir}"
+}
+alias hq-alias=hqAliasPathToHqDir
+alias hq-link=hqAliasHqDirToPath
+
+# /**
+#  * go to dir containing file
+#  */
+function hqGoToFileDir {
+    cd "`dirname ${1}`"
+}
+alias cdf=hqGoToFileDir
+
+# /**
+#  * go to closest dir containig git
+#  */
+function hqGoToClosestDir {
+    while [ "`pwd`" != '/' ] && [ ! -e .git ]; do
+        cd ..
+    done
+}
+alias cdg=hqGoToClosestDir
+
+# /**
+#  * send stream of files being tared over ssh tunel
+#  */
+function hqTarOverSSh {
+    commandUsage="'${bold}hqTarSSh${normal} sshHost directoryPath [destinationPath]'"
+
+    hqExceptionEmpty "${1}" "You have to pass ssh host name: ${commandUsage}";
+    hqExceptionEmpty "${2}" "You have to pass directory to tar: ${commandUsage}";
+
+    sshHost="${1}"
+    directoryPath="${2}"
+    destinationPath="${3}"
+    name="`basename "${2}"`"
+
+    hqExceptionIsFile "${directoryPath}" "${bold}hqTarSSh${normal} '${directoryPath}' not exist"
+
+    if [ "${destinationPath}" == '' ]; then
+        destinationPath='~'
+    fi
+
+    tar ccvzpf - "${directoryPath}" |
+        ssh "${sshHost}" "dd of=${destinationPath}/${name}.tgz"
+}
+
+function hqDirName {
+    pwd="`pwd`"
+    hqDirName="`basename ${pwd}`"
+}
+
+function hqGenerateMdList {
+    hqExceptionEmpty "${1}" "You have to pass md file to get its list: '${bold}hqGenerateMdList${normal} filePath'";
+    hqExceptionIsFile "${1}" "${bold}hqGenerateMdList${normal} '${fileToLoad}' not exist"
+
+    filePath="${1}"
+
+    grep '^##' "${filePath}" |
+        egrep -v '####' |
+        sed '
+            s/\[\([^\]*\)\]([^)]*)/\1/g
+            s/^\([^ ]*\) \([^ ]*\)\( *.*\)$/\1 [\2\3](#\L\2)/
+            s/#/*/
+            s/*#/ */
+            s/*#/ */
+            s/*#/ */
+            s/*#/ */
+            s/*#/ */
+        ' |
+        xclip -selection clipboard
+}
+
+function hqCdSandbox {
+    hqDirName
+
+    lastDir="`pwd`"
+    cd "../sandbox/${hqDirName%%\.*}"
+}
+alias cds=hqCdSandbox
+
+function hqCdBack {
+    if [ "${lastDir}" != '' ]; then
+        cd "${lastDir}"
+    fi
+}
+alias cdb=hqCdBack
+
+function hqLinkIcons {
+    ls -la "${1}" |
+        grep '\->' |
+        awk '{print $11}' |
+        while read binPath; do
+            echo ln -s  "${binPath%/*}/*.png" ./
+        done |
+        bash
+}
+
+function hqDeployNgFashioo {
+    ngFashiooDir='/home/hakier/WebstormProjects/ngFashioo'
+    ngFashiooRavenDir='/home/workspace/fashioo/be_dev/web/look/composition'
+
+    cd "${ngFashiooDir}"
+    grunt build
+    rsync -av "dist/" "raven:${ngFashiooRavenDir}/"
+}
+
+queryFile='/tmp/hqCreateDbAndUser.sql'
+pathToParameters='app/config/parameters.yml'
+
+function _hqGetDbAndUserParam {
+    param="`grep "${1}" "${pathToParameters}" | awk '{print $2}'`"
+}
+
+function hqSeparator {
+    echo '===================='
+}
+
+function hqCreateDbAndUser {
+    if [ ! -e "${pathToParameters}" ]; then
+        hqExceptionEmpty "${1}" "You have to pass user to create db dev: '${bold}hqCreateDbAndUser${normal} user'";
+        databaseUser="${1}"
+        databasePassword="`pwgen -1s 32`"
+        databaseName="${databaseUser}_dev"
+    else
+        _hqGetDbAndUserParam database_user
+        databaseUser="${param}"
+
+        _hqGetDbAndUserParam database_password
+        databasePassword="${param}"
+
+        _hqGetDbAndUserParam database_name
+        databaseName="${param}"
+    fi
+
+    databaseNameAllowed="${databaseUser}\_"
+
+    echo -e "user:\t${databaseUser}\npassword:\t${databasePassword}\nname:\t${databaseName}" |
+        column -t
+
+    hqSeparator
+
+    echo -n 'Create? (y): '
+    read answer
+
+    if [ "${answer}" == 'y' ]; then
+        hqSeparator
+
+        echo "CREATE DATABASE IF NOT EXISTS \`${databaseName}\`;" > "${queryFile}"
+        echo "SHOW DATABASES;" >> "${queryFile}"
+        echo "GRANT ALL PRIVILEGES ON \`${databaseNameAllowed}\`.* TO '${databaseUser}'@'localhost' IDENTIFIED BY '${databasePassword}';"  >> "${queryFile}"
+        echo "SELECT u.User FROM mysql.user u WHERE u.User = '${databaseUser}';"  >> "${queryFile}"
+
+        mysql < "${queryFile}" |
+            sed 's/\(Database\|User\)/    \1/'
+    fi
+}
+
+function hqRename {
+    commandUsage="'${bold}hqRename${normal} from to'"
+
+    hqExceptionEmpty "${1}" "You have to pass from which part name You want to change: ${commandUsage}";
+    hqExceptionEmpty "${2}" "You have to pass to which part name You want to change: ${commandUsage}";
+}
+
+function hqComposerInstall {
+    hcomposer install
+    cp /var/www/sandbox/kompas/parameters.yml app/config/parameters.yml
+    cp ../kompass.dev/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
+
+    g st st |
+     grep modified: |
+     awk '{print }' |
+     while read file; do
+        echo -n "${file} "
+
+        git diff |
+         wc -l
+     done > /tmp/git
+
+    cat /tmp/git |
+     awk '{if($2 == 0){print $1}}' |
+     xargs git co
+
+    g st
+}
+
+function hqRmVendor {
+    rm -rf vendor
+    g s
+    hcomposer install
+    cp ../kompass.dev/app/config/parameters.yml app/config/parameters.yml -v
+    cp ../kompass.clean/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php -v
+    g s
+    g st
+}
+
+function hqCheckSymfony {
+    egrep '(@Service|@Inject|ladybug)' src -r
+    echo "===================="
+    phpunit -c app src
+}
+alias cs=hqCheckSymfony
+
+function hqScreen {
+    sessionName="${1}"
+    screen -x "${sessionName}" || screen -S "${sessionName}"
+}
+alias sch='hqScreen hq';
+
+alias hq='node ~/sandbox/hq/node/git-helper/init.js'
+
+function hqCopyDevToProd {
+    echo "cp -v `echo ${1} | sed -e 's/\(\.dev\)/{\1,.prod}/'`" | bash
+}
+alias cpdp=hqCopyDevToProd

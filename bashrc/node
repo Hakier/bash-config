@@ -1,0 +1,9 @@
+#!/bin/bash
+
+alias gh="node ~/.bin/nodejs/git-helper/init.js"
+alias ghp="gh --passivePopup"
+alias ghco="gh --checkoutBranch"
+alias ghbr="gh --branchName"
+alias ghpd="gh --projectDir"
+alias cdp='cd `gh --projectDir`'
+alias ni="npm install --save"

@@ -1,0 +1,262 @@
+#!/bin/bash
+
+alias g='git';
+alias gh='g help';
+alias gla='g la';
+alias gpo='g push origin';
+alias gpom='g push origin';
+
+# /**
+#  * get git remote origin
+#  */
+function hqGitGetOrigin {
+    g rv | grep origin | grep push | awk '{print $2}'
+}
+
+# /**
+#  * clone from hq lab
+#  */
+function hqGitCloneHq {
+    path="${1%%.git}"
+
+    g clone "ssh://hq-gitlab/${path}.git" ${2}
+}
+alias hq-clone='hqGitCloneHq'
+
+# /**
+#  * clone from hq lab
+#  */
+function hqGitClonePositiv {
+    path="${1%%.git}"
+
+    g clone "ssh://repo/home/git/repo/${path}.git" ${2}
+}
+alias positiv-clone='hqGitClonePositiv'
+
+# /**
+#  * checkout task branch by its id
+#  */
+function hqGitCheckoutTask {
+    branchName=''
+
+	if [ "${1}" != '' ]; then
+		branchName="task-${1}"
+	fi
+
+	if [ "${2}" == '-b' ]; then
+	    git co -b "${branchName}"
+    else
+	    git co "${branchName}"
+    fi
+}
+alias gct='hqGitCheckoutTask'
+
+# /**
+#  * pull task from origin by its id
+#  */
+function hqGitPushOriginTask {
+	if [ "${1}" != '' ]; then
+	    if [ "${2}" == '-f' ]; then
+	        git po "task-${1}" -f
+        else
+            git po "task-${1}"
+        fi
+	fi
+}
+alias gpot='hqGitPushOriginTask'
+
+# /**
+#  * pull task from origin by its id
+#  */
+function hqGitPullOriginTask {
+	if [ "${1}" != '' ]; then
+		git plo "task-${1}"
+	fi
+}
+alias gplot='hqGitPullOriginTask'
+
+# /**
+#  * pull task from origin by its id
+#  */
+function hqGitMergeTask {
+	if [ "${1}" != '' ]; then
+		git m "task-${1}"
+	fi
+}
+alias gmt='hqGitMergeTask'
+
+# /**
+#  * create git movie
+#  */
+function hqGitGenerateMovie {
+	gource  -s 0.5 --hide filenames -1280x720 -o gource.ppm &&
+	ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i gource.ppm -vcodec libx264 -preset ultrafast -crf 1 -threads 0 -bf 0 gource.x264.avi
+}
+
+function hqGitCreateBranchPatch {
+    currentBranch="`g brn`"
+    fromBranch="${1}"
+    toBranch="${2}"
+
+    if [ "${fromBranch}" == '' ]; then
+        fromBranch='master'
+    fi
+
+    if [ "${toBranch}" == '' ]; then
+        toBranch="${currentBranch}"
+    fi
+
+    patchDir='patch'
+
+    if [ ! -e "${patchDir}" ]; then
+        mkdir "${patchDir}"
+    fi
+
+    if [ -e "${patchDir}" ]; then
+        echo -n "clear patch dir [${patchDir}] (n)? "
+
+        read clearPatchDir
+    fi
+
+    if [ "${clearPatchDir}" == 'y' ]; then
+        rm -rf "${patchDir}"
+
+        mkdir "${patchDir}"
+
+        echo ''
+    fi
+
+    echo -n '' > "${patchDir}/cp.log"
+
+    echo "Create patch from: ${fromBranch} to: ${toBranch}"
+
+    g db "${fromBranch}" "${toBranch}" |
+        awk '{print $2}' |
+        while read a; do
+            dir="${patchDir}/`dirname ${a}`"
+
+            if [ "${dir}" != "${patchDir}/." ] && [ ! -e "${dir}" ]; then
+                mkdir -p "${dir}"
+            fi
+
+            echo cp -v "${a}" "${patchDir}/${a}" >> "${patchDir}/cp.log"
+            cp -v "${a}" "${patchDir}/${a}"
+        done
+}
+
+function hqReposFile {
+    pwd="`pwd`";
+    reposFile="${pwd}/.repos"
+}
+
+function hqReposReindex {
+    hqReposFile
+
+    echo -n '' > "${reposFile}"
+
+    for git in `find src -name .git`; do
+        cd "${git}"
+
+        repo="`g rv | grep origin | grep push | awk '{print $2}'`"
+
+        cd "${pwd}"
+
+        echo "${git%%/.git} ${repo}" >> "${reposFile}"
+    done
+}
+
+function hqReposClone {
+    hqReposFile
+
+    cat "${reposFile}" |
+        while read dir repo; do
+            if [ ! -e "${dir}" ]; then
+                echo -e "Clonning:\t${repo}\nInto:\t\t${dir}\n\n"
+
+                git clone "${repo}" "${dir}"
+            fi
+        done
+}
+
+function hqReposCommand {
+    hqReposFile
+
+    cat "${reposFile}" |
+        while read dir repo; do
+            if [ -e "${dir}" ]; then
+                echo -e "${Purple}Project: ${Yellow}${dir}\n\n${Color_Off}"
+
+                cd "${dir}"
+
+                ${1}
+
+                cd "${pwd}"
+
+                echo -e "\n\n"
+            else
+                echo -e "${Purple}Project not exist: ${Yellow}${dir}\n\n${Color_Off}"
+            fi
+        done
+}
+
+function hqReposStatus {
+    hqReposCommand 'git st'
+}
+
+alias gf='g fetch'
+
+function hqGitGetRootDirPath {
+    echo "`git root`"
+}
+
+function hqGitGetRootDirName {
+    basename "$(hqGitGetRootDirPath)"
+}
+
+function hqGitGetRootDirNameShort {
+    hqGitGetRootDirName | sed 's/Bundle/B/g'
+}
+
+function hqGitCheckoutPrev {
+    prevCommitHash="`g log -n2 --pretty=oneline | awk '{print $1}' | tail -n 1`"
+
+    g co "${prevCommitHash}"
+}
+alias gcp='hqGitCheckoutPrev'
+
+function hqGitCopySum {
+    g st | awk '{if(NR==1){print $4}}' | xc
+}
+alias gcopy=hqGitCopySum
+
+#
+# rm from git js files which has coffee for it
+#
+function hqGitRmJsIfHasCoffee {
+    find -name '*.coffee' |
+     sed -e 's/\.coffee$/.js/g' |
+         while read file; do
+            git rmc "${file}" 2> /dev/null
+         done
+}
+alias grmjs=hqGitRmJsIfHasCoffee
+
+
+function hqGitRebaseAndMergeTask {
+    taskId="${1}"
+
+    if [ "${1}" ]; then
+        ok=0
+
+        hqGitCheckoutTask "${taskId}" &&
+        git rem &&
+        git com &&
+        hqGitMergeTask "${taskId}" &&
+        ok=1
+
+        if [ "${2}" == '-f' ] && [ "${ok}" == 1 ]; then
+            gpot "${taskId}" -f
+        fi
+    fi
+}
+alias grmt=hqGitRebaseAndMergeTask

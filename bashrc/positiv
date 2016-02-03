@@ -1,0 +1,25 @@
+#!/bin/bash
+
+repo="ssh://repo/home/git/repo";
+alias gpl='git br > /tmp/a; cat /tmp/a | grep task | while read i; do git push lab $i; done; git push lab master;';
+alias deploy_kompass="git pull origin master; rsync --exclude 'sess_*' -ae ssh /var/www/kompass.prod/ fp:/home/workspace/kompass.dev/; ssh fp -C '/home/hakier/.bin/deployKompass'";
+
+function git_add_lab {
+	if [ "${1}" != '' ]; then
+		repoName="${1}";
+	else
+		repoName="`git remote -v | grep push | sed -e 's/.*\/\([^\/]*\)\.git .*/\1/'`";
+		repoName="${repoName}/${repoName}";
+	fi
+
+	git remote add lab "ssh://lab/${repoName}.git";
+}
+function git_push_lab {
+	for i in `g br`; do
+		if [ "${i##task-}"  != "${i}" ]; then
+			g push lab $i;
+		fi
+	done
+
+	g push lab master;
+}

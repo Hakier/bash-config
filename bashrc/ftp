@@ -1,0 +1,79 @@
+#!/bin/bash
+
+tmpFile='/tmp/ftp-cmd'
+function hqFtpEcho {
+    echo "${1}" >> "${tmpFile}"
+}
+
+function hqFtpCommand {
+    echo "cd www_new" > "${tmpFile}"
+
+    ftpHost="${1}"
+    shift
+
+    while [ "${1}" != '' ]; do
+        hqFtpEcho "${1}"
+        shift
+    done
+
+    hqFtp "${ftpHost}" < "${tmpFile}"
+}
+
+function hqFtpCommandDirProd {
+    echo "cd www_new" > "${tmpFile}"
+
+    hqDirName
+    hostname="${hqDirName%%.dev}.prod"
+
+    while [ "${1}" != '' ]; do
+        hqFtpEcho "${1}"
+        shift
+    done
+
+    hqFtp "${hostname}" < "${tmpFile}"
+}
+
+function hqFtpCommandDirProdPush {
+    echo "cd www_new" > "${tmpFile}"
+
+    hqDirName
+    hostname="${hqDirName%%.dev}.prod"
+
+    while [ "${1}" != '' ]; do
+        hqFtpEcho "dir ${1}"
+        hqFtpEcho "put ${1} ${1}"
+        shift
+    done
+
+    hqFtp "${hostname}" < "${tmpFile}"
+}
+alias fp=hqFtpCommandDirProdPush
+
+function hqFtpCommandDirProdPull {
+    echo "cd www_new" > "${tmpFile}"
+
+    hqDirName
+    hostname="${hqDirName%%.dev}.prod"
+
+    while [ "${1}" != '' ]; do
+        hqFtpEcho "dir ${1}"
+        hqFtpEcho "get ${1} ${1}"
+        shift
+    done
+
+    hqFtp "${hostname}" < "${tmpFile}"
+}
+alias fpl=hqFtpCommandDirProdPull
+
+function hqFtp {
+    if [ "${1}" != '' ]; then
+        machine="`grep " ${1}$" ~/.ftp |
+         awk '{print $1}'`"
+    fi
+
+    if [ "${machine}" != '' ]; then
+        ftp "${machine}"
+    else
+        egrep '^#' -v ~/.ftp
+    fi
+}

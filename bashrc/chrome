@@ -1,0 +1,6 @@
+#!/bin/bash
+
+function hqChromeAppRun {
+    google-chrome --silent-launch --load-and-launch-app="${1}"
+}
+alias chrome-app=hqChromeAppRun

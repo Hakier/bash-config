@@ -1,0 +1,76 @@
+#!/bin/bash
+
+function hqScreenSetTitleGit {
+    if [ "${gitBranch}" != '' ] && [ "${TERM}" == 'screen' ] && [ "`whoami`" != 'www-data' ]; then
+        hqScreenSetTitle "$(hqGitGetRootDirNameShort)${gitBranchShort} ${cleanStateMark}"
+    fi
+}
+function hqScreenSetTitleGitByEcho {
+    if [ "${gitBranch}" != '' ] && [ "${TERM}" == 'screen' ] && [ "`whoami`" != 'www-data' ]; then
+        hqScreenSetTitleByEcho "$(hqGitGetRootDirNameShort)${gitBranchShort} ${cleanStateMark}"
+    fi
+}
+
+function hqScreenSetTitle {
+    newTitle="${1}"
+
+    screen -X title "${newTitle}"
+}
+
+function hqScreenSetTitleByEcho {
+    newTitle="${1}"
+
+    echo -ne "\ek${newTitle}\e\\"
+#    echo -e '\033k'${newTitle}'\033\\'
+}
+
+function hqScreenAutoSetScreen {
+    sleepTime=1
+
+    if [ "${1}" != '' ]; then
+        sleepTime="${1}"
+    fi
+
+    _hqScreenAutoSetScreen &
+}
+
+function _hqScreenAutoSetScreen {
+    while [ 1 ]; do
+        gitBranch >> /dev/null
+        hqScreenSetTitleGitByEcho
+
+        sleep ${sleepTime}
+    done
+}
+
+function hqScreenSetDir {
+    if [ "${1}" != '' ]; then
+        dir="`realpath ${1}`"
+    else
+        dir="`pwd`"
+    fi
+
+    screen -X setenv currentdir "${dir}"
+    screen -X eval 'chdir $currentdir'
+}
+alias ssd="hqScreenSetDir"
+
+function hqScreenChangeDir {
+    hqScreenSetDir "${1}"
+
+    screen -X screen
+}
+alias scd='hqScreenChangeDir'
+
+function hqScreenOpenSubdirs {
+    for dir in *; do
+        if [ -d "${dir}" ]; then
+            hqScreenChangeDir "${dir}"
+        fi
+    done
+}
+alias sod='hqScreenOpenSubdirs'
+
+alias hqScreenCreateWindow="screen -X screen"
+alias scw="hqScreenCreateWindow"
+alias sc="scw"

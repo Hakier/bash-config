@@ -1,0 +1,81 @@
+#!/bin/bash
+
+dirYoutube="${HOME}/Wideo/Youtube"
+dirYoutubeTag="${dirYoutube}/_tag"
+dirYoutubeUser="${dirYoutube}/user"
+dirYoutubePlaylist="${dirYoutube}/playlist"
+
+# /**
+#  * download youtube videos of user who's login is current directory name or link in .url file
+#  */
+function hqYoutubeDownloadUserVideos {
+    if [ -e .url ]; then
+        url="`cat .url`"
+    else
+        hqDirName
+
+        userName="${hqDirName}"
+        url="https://www.youtube.com/user/${userName}/videos"
+    fi
+
+    youtube-dl "${url}" &&
+        echo 1 > .isDone ||
+        echo 0 > .isDone
+}
+
+function hqYoutubeDownloadUserVideosAndCreateDir {
+    hqExceptionEmpty "${1}" "You have to pass userName: '${bold}hqYoutubeDownloadUserVideosAndCreateDir${normal} userName'";
+
+    userName="${1}"
+
+    mkdir "${dirYoutubeUser}/${userName}"
+    cd "${dirYoutubeUser}/${userName}"
+
+    hqYoutubeDownloadUserVideos
+}
+
+function hqYoutubeDownloadLoop {
+    echo 0 > .isDone
+
+    while [ "`cat .isDone`" == 0 ]; do
+        hqYoutubeDownloadUserVideos
+        sleep 5
+    done
+}
+
+function hqYoutubeCd {
+    cd "${dirYoutube}"
+}
+
+function hqYoutubeCdUser {
+    cd "${dirYoutubeUser}"
+}
+
+function hqYoutubeCdPlaylist {
+    cd "${dirYoutubePlaylist}"
+}
+
+function hqYoutubeTag {
+    while [ "${1}" != '' ]; do
+        echo "${1}" >> .tag
+        shift
+    done
+
+    cat .tag |
+        grep [a-Z0-9] |
+        while read tag; do
+            if [ ! -e "${dirYoutubeTag}/${tag}" ]; then
+                mkdir -p "${dirYoutubeTag}/${tag}"
+            fi
+
+            ln -s "`pwd`"  "${dirYoutubeTag}/${tag}/" 2>/dev/null && echo "${tag}"
+        done
+}
+
+function hqYoutubeDownloadSubdirs {
+    for dirName in *; do
+        cd "$dirName" &&
+            hqYoutubeDownloadLoop &&
+            cd ..
+    done
+}

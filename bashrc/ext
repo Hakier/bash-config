@@ -1,0 +1,66 @@
+#!/bin/bash
+
+PATH="${PATH}:~/.bin";
+
+# CAM
+alias cam='mplayer tv:// -cache 128  -tv driver=v4l2:width=640:height=480:outfmt=i420:device=/dev/video0'; #-flip
+
+# 7 ZIP
+alias 7zultra="7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on";
+alias 7zsplit="7z a -t7z -m0=lzma -mx=0 -mfb=64 -md=32m -ms=on -v500m";
+
+# MINUS URL
+get='min:/home/hakier/public_html/get';
+
+# S2
+alias hqb='php app/console generate:bundle --namespace=';
+alias hqd='php app/console container:debug';
+
+alias s2='s2c;grep "s2 " ~/.bash_history* -h | sort | uniq > ~/.bash_history_s2; php `pwd`/app/console';
+
+# HHVM
+#alias hhvm='/home/hakier/dev-tools/hhvm/hphp/hhvm/hhvm';
+
+# composer
+alias composer='php /home/hakier/dev-tools/composer.phar';
+alias hcomposer='hhvm /home/hakier/dev-tools/composer.phar';
+
+# phpunit
+alias phpunit='php /home/hakier/dev-tools/phpunit.phar';
+
+# GIT
+alias g='git';
+alias gh='git help';
+alias gla='git la';
+
+# TAR
+function tp {
+    filePath="${1%%/}"
+
+	tar ccvzpf "${filePath}.tgz" "${filePath}"
+}
+
+# GREP
+export GREP_OPTIONS='--color=auto'
+
+# LESS
+export LESS='-R'
+export LESSOPEN='|~/config/bash/lessfilter %s'
+export LS_OPTIONS='--color=auto'
+alias ls="ls --color=auto"
+
+function mp4-to-mp3 {
+    find -name '*.mp4' -exec avconv -i {} -vn -f mp3 {}.mp3 \;
+}
+
+# GOLEM
+alias golem='php /var/www/golem.dev/app/console'
+
+alias c="clear"
+alias xc="xclip -selection clipboard"
+
+alias d="export DISPLAY=:0.0"
+alias m="kdialog --msgbox"
+alias cdv="cd /var/www"
+
+alias aria2='aria2c --seed-ratio=0 --seed-time=0'

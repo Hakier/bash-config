@@ -1,0 +1,22 @@
+#!/bin/bash
+
+alias s2='php app/console';
+alias s2t='phpunit -c app/phpunit.xml.dist'
+alias s2ti='find src -name IntegrationTests | while read dir; do s2t $dir; done'
+alias s2s='s2 -s'
+alias s2_schema_update='s2 doctrine:schema:update --force';
+alias s2_generate_entities='s2 doctrine:generate:entities';
+alias s2_generate_entities_no_backup='s2_generate_entities --no-backup';
+alias s2_dump_assets='s2 assetic:dump';
+alias s2_dump_assets_prod='s2_dump_assets --env=prod --no-debug';
+alias s2_clear_cache='s2 cache:clear';
+alias s2_clear_cache_dev='s2_clear_cache -e dev';
+alias s2_clear_cache_prod='s2_clear_cache -e prod';
+alias s2_router_debug='s2 router:debug';
+
+
+function s2ConvertToSemicolon {
+    node ~/sandbox/hq/node/tools/s2.js "${1}"
+    node ~/sandbox/hq/node/tools/s2.js "${1}" | xc
+}
+alias s2cs=s2ConvertToSemicolon
