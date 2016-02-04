@@ -41,7 +41,7 @@ function tp {
 }
 
 # GREP
-export GREP_OPTIONS='--color=auto'
+unset GREP_OPTIONS
 
 # LESS
 export LESS='-R'
