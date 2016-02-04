@@ -15,7 +15,16 @@ function yakuake--set-title-and-open-screen {
 
 function project-ls {
     type="${1}"
-    pathProjects=~/dev/projects/${type}
+    pathProjects=~/dev/projects
+
+    if [ "${1}" == '' ]; then
+        ls -1 ${pathProjects}
+
+        echo -n 'Project type: '
+        read type
+    fi
+
+    pathProjects="${pathProjects}/${type}"
 
     projectsList="`ls ${pathProjects} -1`"
 
@@ -34,6 +43,8 @@ function project-ls {
 }
 
 function project-cd {
+    pathProjects=~/dev/projects
+
     name="${2}"
     type="${1}"
 
