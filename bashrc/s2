@@ -13,6 +13,7 @@ alias s2_clear_cache='s2 cache:clear';
 alias s2_clear_cache_dev='s2_clear_cache -e dev';
 alias s2_clear_cache_prod='s2_clear_cache -e prod';
 alias s2_router_debug='s2 router:debug';
+alias s2rl='s2 doctrine:schema:drop --force && s2 doctrine:schema:update --force && s2c'
 
 
 function s2ConvertToSemicolon {

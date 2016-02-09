@@ -252,6 +252,7 @@ function hqGitRebaseAndMergeTask {
         git rem &&
         git com &&
         hqGitMergeTask "${taskId}" &&
+	git pom &&
         ok=1
 
         if [ "${2}" == '-f' ] && [ "${ok}" == 1 ]; then
@@ -260,3 +261,15 @@ function hqGitRebaseAndMergeTask {
     fi
 }
 alias grmt=hqGitRebaseAndMergeTask
+
+function gitChangeCommitMessage {
+    hash="${1}"
+    branchName="${2}"
+
+    git co ${hash} &&
+     git cia &&
+     git tag tmp &&
+     git checkout ${branchName} &&
+     g re tmp &&
+     g tag -d tmp
+}
