@@ -10,7 +10,7 @@ function tsdInstall {
 function compileApp {
     find scripts/ -name '_*.ts' > /tmp/list &&
      find scripts/ -name '*.ts' -not -name '_*.ts' >> /tmp/list &&
-     tsc --out app.js `cat /tmp/list | tr "\n" ' '` &&
+     tsc --target es5 --out app.js `cat /tmp/list | tr "\n" ' '` &&
 #     grep "script src=.bower_components" index.html | sed -e 's/.*script src=.\(.*\).><\/script.*/\1/' > /tmp/list-bower &&
 #     uglifyjs `cat /tmp/list-bower | tr "\n" ' '` app.js -o app.min.js
      uglifyjs  app.js -o app.min.js
