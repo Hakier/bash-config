@@ -13,18 +13,24 @@ function yakuake--set-title-and-open-screen {
     screen -S "${title}"
 }
 
+
+function _project-ask-for-type-and-projects-path {
+	_projectProjectsPath=~/dev/projects
+	
+	if [ "${1}" != '' ]; then
+		type="${1}"
+	else
+        	ls -1 ${pathProjects}
+
+	        echo -n 'Project type: '
+	        read type
+	fi
+	
+	pathProjects="${_projectProjectsPath}/${type}"
+}
+
 function project-ls {
-    type="${1}"
-    pathProjects=~/dev/projects
-
-    if [ "${1}" == '' ]; then
-        ls -1 ${pathProjects}
-
-        echo -n 'Project type: '
-        read type
-    fi
-
-    pathProjects="${pathProjects}/${type}"
+    _project-ask-for-type-and-projects-path "${1}"
 
     projectsList="`ls ${pathProjects} -1`"
 
@@ -51,8 +57,15 @@ function project-cd {
     pathProject="${pathProjects}/${type}/${name}"
 
     if [ ! -e "${pathProject}" ]; then
-        echo "${pathProject} not exists";
+        echo "${pathProject} not exists"
     else
         cd "${pathProject}" && yakuake--set-title-and-open-screen "${name}"
     fi
+}
+
+function project-clone {
+	_project-ask-for-type-and-projects-path "${2}"
+
+	cd ~/dev/projects/"${type}" &&
+ 	 git clone "${1}"
 }
