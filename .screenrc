@@ -13,4 +13,13 @@ defscrollback 1000
 # Bind F11 and F12 (NOT F1 and F2) to previous and next screen window
 bindkey -k F1 prev # F11
 bindkey -k F2 next # F12
+# Bind F9 and F10 to page up and down
+bindkey -k k9 eval "copy" "stuff ^u"
+bindkey -k k; eval "copy" "stuff ^d"
+bindkey -m -k k9 stuff ^u
+bindkey -m -k k; stuff ^d
+# Bind mouse scroll up and down for scrolling
+termcapinfo xterm* ti@:te@
+# Bind ^a+R to reload .screenrc
+bind R eval "source $HOME/.screenrc" "echo '.screenrc reloaded!'"
 
