@@ -1,0 +1,4 @@
+#!/bin/bash
+
+alias lolcommits-enable-gif='lolcommits --enable --delay=5 --animate=4 --fork'
+

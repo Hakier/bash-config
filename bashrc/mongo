@@ -1,0 +1,12 @@
+#!/bin/bash
+
+function mongo-uri {
+    uri="$1"
+
+    user="`echo ${uri} | sed -e 's/.*\/\/\([^:]*\):.*/\1/'`"
+    password="`echo ${uri} | sed -e 's/.*:\([^:]*\)@.*/\1/'`"
+    host="`echo ${uri} | sed -e 's/.*@//'`"
+
+    mongo "${host}" -u "${user}" -p "${password}"
+}
+
