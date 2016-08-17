@@ -107,4 +107,16 @@ function ps1 {
 	PS1="\n${Yellow}\h ${dirColor}\w\n${Green}\u ${Purple}\t ${Cyan}\W\$(gitBranch)\n${Purple}${mark}\[\033[00m\] ";
 }
 
+function ps1_withhout_git {
+    if [ "`whoami`" == 'root' ]; then
+        mark="#";
+        dirColor="${Red}"
+        else
+            mark="$";
+            dirColor="${Green}"
+        fi;
+
+        PS1="\n${Yellow}\h ${dirColor}\w\n${Green}\u ${Purple}\t ${Cyan}\W\\n${Purple}${mark}\[\033[00m\] ";
+    }
+
 ps1;
