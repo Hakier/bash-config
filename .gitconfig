@@ -81,6 +81,11 @@
 	sm	        = stash save
 	sa	        = stash apply
 
+	# submodule  =====
+	sdiff = !git diff && git submodule foreach 'git diff'
+	spush = push --recurse-submodules=on-demand
+	supdate = submodule update --remote --merge
+
     # get root dir
 	root        = rev-parse --show-toplevel
 
