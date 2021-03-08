@@ -12,6 +12,10 @@ function yesNo {
   esac
 }
 
+function printSeparator {
+  echo '----------'
+}
+
 CONFIG_DIR="$(getScriptDirectory)"
 
 function linkGitConfig {
@@ -21,8 +25,12 @@ function linkGitConfig {
     _linkGitConfig
   elif [[ "yes" == $(yesNo "Do you want to replace .gitconfig?") ]]; then
     rm "${destinationPath}" -v &&
-      _linkGitConfig
+      echo -e "Not linked .gitconfig"
+  else
+    echo -e "Not linked .gitconfig"
   fi
+
+  printSeparator
 }
 
 function _linkGitConfig {
