@@ -1,15 +1,29 @@
 #!/bin/bash
 
 function getScriptDirectory {
-  echo $( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )
+  cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd
 }
 
-function yesNo {
-  read -p "$1 ([y]yes or [N]o): "
-  case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-    y|yes)  echo "yes"  ;;
-    *)      echo "no"   ;;
+function confirm {
+  read -rp "$1 ([y]yes or [N]o): "
+  case $(echo "$REPLY" | tr 'A-Z' 'a-z') in
+    y|yes)  return 0  ;;
+    *)      return 1  ;;
   esac
+}
+
+function requireFileNotExist {
+  filePath="${1}"
+  message="${2}"
+
+  if [[ ! -e "${filePath}" ]]; then
+    return 0
+  else
+    confirm "${message:="Do you want to remove ${filePath}?"}" &&
+      rm "${filePath}" -v &&
+      return 0 ||
+      return 1
+  fi
 }
 
 function printSeparator {
@@ -19,23 +33,11 @@ function printSeparator {
 CONFIG_DIR="$(getScriptDirectory)"
 
 function linkGitConfig {
-  destinationPath=~/.gitconfig
-
-  if [[ ! -e "${destinationPath}" ]]; then
-    _linkGitConfig
-  elif [[ "yes" == $(yesNo "Do you want to replace .gitconfig?") ]]; then
-    rm "${destinationPath}" -v &&
-      echo -e "Not linked .gitconfig"
-  else
+  requireFileNotExist ~/.gitconfig "Do you want to replace .gitconfig?" &&
+    echo "Linking .gitconfig..." &&
+    ln -sv "${CONFIG_DIR}/.gitconfig" ~/.gitconfig ||
     echo -e "Not linked .gitconfig"
-  fi
-
   printSeparator
-}
-
-function _linkGitConfig {
-  echo "Linking .gitconfig..." &&
-    ln -s "${CONFIG_DIR}/.gitconfig" ~/.gitconfig
 }
 
 linkGitConfig
