@@ -115,3 +115,5 @@
 	ui = auto
 	branch = auto
 	status = auto
+[credential]
+	helper = cache --timeout=99999999
