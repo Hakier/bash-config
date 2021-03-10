@@ -117,3 +117,5 @@
 	status = auto
 [credential]
 	helper = cache --timeout=99999999
+[diff]
+	submodule = log
