@@ -19,6 +19,7 @@
 	co	        = checkout
 	com	        = checkout master
 	cod	        = checkout develop
+    cob         = checkout HEAD~1
 
 	# branch    =====
 	br	        = branch
@@ -34,6 +35,7 @@
 	p           = push
 	po          = push origin
 	pom         = push origin master
+	pod         = push origin develop
 	poa         = push origin --all
 	pot         = push origin --tags
 
@@ -43,7 +45,7 @@
 	plom        = pull origin master
 	plod        = pull origin develop
 
-	# diff	     =====
+	# diff	    =====
 	d	        = diff
 	dc	        = diff --cached
 	db          = diff --name-status
@@ -51,7 +53,7 @@
 	ds          = diff --stat
 	dsm         = diff --stat master
 
-	# show	     =====
+	# show	    =====
 	st	        = status
 	lg	        = log -p
 	ln			= log --name-only
@@ -62,17 +64,17 @@
 	nm	        = branch --no-merged
 	im	        = branch --merged
 	la	        = config --get-regexp ^alias\\.	#list aliases
-        lg1         = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
-        lg2         = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
+    lg1         = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+    lg2         = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
 
-	# remote     =====
+	# remote    =====
 	rv	        = remote -v
 	rs          = remote add
 	rao         = remote add origin
 	rs          = remote set-url
 	rso         = remote set-url origin
 
-	# stash      =====
+	# stash     =====
 	sl	        = stash list
 	sd	        = stash drop
 	sp	        = stash pop
@@ -81,13 +83,27 @@
 	sm	        = stash save
 	sa	        = stash apply
 
-	# submodule  =====
-	sdiff = !git diff && git submodule foreach 'git diff'
-	spush = push --recurse-submodules=on-demand
-	supdate = submodule update --remote --merge
+	# submodule =====
+	sdiff       = !git diff && git submodule foreach 'git diff'
+	spush       = push --recurse-submodules=on-demand
+	supdate     = submodule update --remote --merge
+
+    # reset     =====
+    rb          = reset HEAD~1
 
     # get root dir
 	root        = rev-parse --show-toplevel
+
+    # https://hackernoon.com/lesser-known-git-commands-151a1918a60#.uvixl55kc
+	please      = push --force-with-lease # like push --force but it checks that your local copy of the ref that you’re overwriting is up-to-date before overwriting it
+	commend     = commit --amend --no-edit # quietly tacks any staged files onto the last commit you created, re-using your existing commit message
+	it          = !git init && git commit -m “root” --allow-empty # both initializes your repository and creates an empty root commit
+	stsh        = stash --keep-index # stash only unstaged changes to tracked files
+	staash      = stash --include-untracked # stash untracked and tracked files
+	staaash     = stash --all # stash ignored, untracked, and tracked files
+	shorty      = status --short --branch # shorted version of git status
+    merc        = merge --no-ff # merge always without fast-forward
+	grog        = log --graph --abbrev-commit --decorate --all --format=format:\"%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(dim white) - %an%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n %C(white)%s%C(reset)\" # graphical log
 
 [push]
 	default = matching
