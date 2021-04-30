@@ -4,12 +4,16 @@ source ./helpers.sh
 
 CONFIG_DIR="$(getScriptDirectory)"
 
-function linkGitConfig {
-  requireFileNotExist ~/.gitconfig "Do you want to replace .gitconfig?" &&
-    echo "Linking .gitconfig..." &&
-    ln -sv "${CONFIG_DIR}/.gitconfig" ~/.gitconfig ||
-    echo -e "Not linked .gitconfig"
+function linkConfig {
+  fileName="${1}"
+  fileExtraPath="${2}"
+
+  requireFileNotExist "${HOME}/${fileName}" "Do you want to replace ${fileName}?" &&
+    echo "Linking ${fileName}..." &&
+    ln -sv "${CONFIG_DIR}/${fileExtraPath}${fileName}" "${HOME}/${fileName}" ||
+    echo -e "Not linked ${fileName}"
   printSeparator
 }
 
-linkGitConfig
+linkConfig .gitconfig
+linkConfig .zshrc zsh/
