@@ -54,6 +54,7 @@
     dsm         = diff --stat master
 
     # show      =====
+    sh          = rev-parse --short HEAD # get commit short hash
     st          = status
     lg          = log -p
     ln          = log --name-only
