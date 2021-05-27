@@ -1,121 +1,121 @@
 [user]
-	name	    = hakier
-	email	    = hakier29a@gmail.com
-	
+    name        = hakier
+    email       = hakier29a@gmail.com
+
 [alias]
-	# add       =====
-	a           = add
-	aa          = add .
-	ai          = add -i
+    # add       =====
+    a           = add
+    aa          = add .
+    ai          = add -i
 
-	# rm
-	rmc         = rm --cached
+    # remove    =====
+    rmc         = rm --cached
 
-	# do	    =====
-	m	        = merge
-	ci	        = commit
-	cia	        = commit --amend
-	ciaa        = commit --amend -a
-	co	        = checkout
-	com	        = checkout master
-	cod	        = checkout develop
+    # do        =====
+    m           = merge
+    ci          = commit
+    cia         = commit --amend
+    ciaa        = commit --amend -a
+    co          = checkout
+    com         = checkout master
+    cod         = checkout develop
     cob         = checkout HEAD~1
 
-	# branch    =====
-	br	        = branch
-	brn         = rev-parse --abbrev-ref HEAD
+    # branch    =====
+    br          = branch
+    brn         = rev-parse --abbrev-ref HEAD
 
-	# rebase    =====
-	re	        = rebase
-	rem	        = rebase master
-	red	        = rebase develop
-	rec	        = rebase --continue
+    # rebase    =====
+    re          = rebase
+    rem         = rebase master
+    red         = rebase develop
+    rec         = rebase --continue
 
-	# push      =====
-	p           = push
-	po          = push origin
-	pom         = push origin master
-	pod         = push origin develop
-	poa         = push origin --all
-	pot         = push origin --tags
+    # push      =====
+    p           = push
+    po          = push origin
+    pom         = push origin master
+    pod         = push origin develop
+    poa         = push origin --all
+    pot         = push origin --tags
 
-	# pull      =====
-	pl          = pull
-	plo         = pull origin
-	plom        = pull origin master
-	plod        = pull origin develop
+    # pull      =====
+    pl          = pull
+    plo         = pull origin
+    plom        = pull origin master
+    plod        = pull origin develop
 
-	# diff	    =====
-	d	        = diff
-	dc	        = diff --cached
-	db          = diff --name-status
-	dbm         = diff --name-status master
-	ds          = diff --stat
-	dsm         = diff --stat master
+    # diff      =====
+    d           = diff
+    dc          = diff --cached
+    db          = diff --name-status
+    dbm         = diff --name-status master
+    ds          = diff --stat
+    dsm         = diff --stat master
 
-	# show	    =====
-	st	        = status
-	lg	        = log -p
-	ln			= log --name-only
-	who	        = shortlog -s --
-	whois	    = "!sh -c 'git log -i -1 --pretty=\"format:%an <%ae>\n\" --author=\"$1\"' -"
-	whatis	    = show -s --pretty='tformat:%h (%s, %ad)' --date=short
-	new	        = !sh -c 'git log $1@{1}..$1@{0} "$@"'
-	nm	        = branch --no-merged
-	im	        = branch --merged
-	la	        = config --get-regexp ^alias\\.	#list aliases
+    # show      =====
+    st          = status
+    lg          = log -p
+    ln          = log --name-only
+    who         = shortlog -s --
+    whois       = "!sh -c 'git log -i -1 --pretty=\"format:%an <%ae>\n\" --author=\"$1\"' -"
+    whatis      = show -s --pretty='tformat:%h (%s, %ad)' --date=short
+    new         = !sh -c 'git log $1@{1}..$1@{0} "$@"'
+    nm          = branch --no-merged
+    im          = branch --merged
+    la          = config --get-regexp ^alias\\.  #list aliases
     lg1         = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
     lg2         = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
 
-	# remote    =====
-	rv	        = remote -v
-	rs          = remote add
-	rao         = remote add origin
-	rs          = remote set-url
-	rso         = remote set-url origin
+    # remote    =====
+    rv          = remote -v
+    rs          = remote add
+    rao         = remote add origin
+    rs          = remote set-url
+    rso         = remote set-url origin
 
-	# stash     =====
-	sl	        = stash list
-	sd	        = stash drop
-	sp	        = stash pop
-	s	        = stash
-	ss	        = stash show
-	sm	        = stash save
-	sa	        = stash apply
+    # stash     =====
+    sl          = stash list
+    sd          = stash drop
+    sp          = stash pop
+    s           = stash
+    ss          = stash show
+    sm          = stash save
+    sa          = stash apply
 
-	# submodule =====
-	sdiff       = !git diff && git submodule foreach 'git diff'
-	spush       = push --recurse-submodules=on-demand
-	supdate     = submodule update --remote --merge
+    # submodule =====
+    sdiff       = !git diff && git submodule foreach 'git diff'
+    spush       = push --recurse-submodules=on-demand
+    supdate     = submodule update --remote --merge
 
     # reset     =====
     rb          = reset HEAD~1
 
-    # get root dir
-	root        = rev-parse --show-toplevel
+    # get root dir =====
+    root        = rev-parse --show-toplevel
 
     # https://hackernoon.com/lesser-known-git-commands-151a1918a60#.uvixl55kc
-	please      = push --force-with-lease # like push --force but it checks that your local copy of the ref that you’re overwriting is up-to-date before overwriting it
-	commend     = commit --amend --no-edit # quietly tacks any staged files onto the last commit you created, re-using your existing commit message
-	it          = !git init && git commit -m “root” --allow-empty # both initializes your repository and creates an empty root commit
-	stsh        = stash --keep-index # stash only unstaged changes to tracked files
-	staash      = stash --include-untracked # stash untracked and tracked files
-	staaash     = stash --all # stash ignored, untracked, and tracked files
-	shorty      = status --short --branch # shorted version of git status
+    please      = push --force-with-lease # like push --force but it checks that your local copy of the ref that you’re overwriting is up-to-date before overwriting it
+    commend     = commit --amend --no-edit # quietly tacks any staged files onto the last commit you created, re-using your existing commit message
+    it          = !git init && git commit -m “root” --allow-empty # both initializes your repository and creates an empty root commit
+    stsh        = stash --keep-index # stash only unstaged changes to tracked files
+    staash      = stash --include-untracked # stash untracked and tracked files
+    staaash     = stash --all # stash ignored, untracked, and tracked files
+    shorty      = status --short --branch # shorted version of git status
     merc        = merge --no-ff # merge always without fast-forward
-	grog        = log --graph --abbrev-commit --decorate --all --format=format:\"%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(dim white) - %an%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n %C(white)%s%C(reset)\" # graphical log
+    grog        = log --graph --abbrev-commit --decorate --all --format=format:\"%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(dim white) - %an%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n %C(white)%s%C(reset)\" # graphical log
 
 [push]
-	default = simple
+    default     = simple
 
 [core]
-	autocrlf = input
+    autocrlf    = input
 
 [color]
-	ui = auto
-	branch = auto
-	status = auto
+    ui          = auto
+    branch      = auto
+    status      = auto
 [credential]
-	helper = cache --timeout=99999999
+    helper      = cache --timeout=99999999
 [diff]
-	submodule = log
+    submodule   = log
